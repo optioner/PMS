@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: pms-backend
+  datasource:
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:project_management}?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&connectTimeout=10000&socketTimeout=30000
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    timeout: 1000ms
+
+jwt:
+  secret: ${JWT_SECRET:your_jwt_secret_key_should_be_long_and_secure_for_production}
+  expiration: ${JWT_EXPIRATION:86400}
+
+logging:
+  level:
+    com.pm: DEBUG
+    org.hibernate.SQL: DEBUG
