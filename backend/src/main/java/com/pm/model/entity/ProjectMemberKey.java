@@ -11,7 +11,6 @@ import java.io.Serializable;
 @Embeddable
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class ProjectMemberKey implements Serializable {
     @Column(name = "project_id")
     private Long projectId;
