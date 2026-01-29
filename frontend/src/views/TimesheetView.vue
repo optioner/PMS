@@ -58,10 +58,10 @@ import { getTasks } from '@/api/task'
 import { ElMessage } from 'element-plus'
 
 const projectStore = useProjectStore()
-const timesheets = ref([])
+const timesheets = ref<any[]>([])
 const showDialog = ref(false)
-const projects = ref([])
-const tasks = ref([])
+const projects = ref<any[]>([])
+const tasks = ref<any[]>([])
 const selectedProjectId = ref(null)
 
 const form = reactive({

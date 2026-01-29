@@ -83,6 +83,12 @@ watch(() => props.modelValue, (val) => {
   }
 })
 
+onMounted(() => {
+  if (props.modelValue) {
+    fetchData()
+  }
+})
+
 const handleAddMember = async () => {
   if (!selectedUserId.value) return
   try {
