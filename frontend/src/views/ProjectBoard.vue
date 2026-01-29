@@ -14,17 +14,19 @@
           :on-error="handleImportError"
           accept=".csv"
         >
-          <el-button>Import CSV</el-button>
+          <el-button>{{ t('common.import') }}</el-button>
         </el-upload>
-        <el-button @click="$router.push(`/projects/${projectId}/report`)">Report</el-button>
-        <el-button type="primary" @click="showTaskDialog = true">New Task</el-button>
+        <el-button @click="showMembersDialog = true">{{ t('project.members') }}</el-button>
+        <el-button @click="$router.push(`/projects/${projectId}/report`)">{{ t('common.report') }}</el-button>
+        <el-button type="primary" @click="showTaskDialog = true">{{ t('task.newTask') }}</el-button>
+        <el-button @click="$router.push(`/projects/${projectId}/gantt`)">Gantt</el-button>
       </template>
     </el-page-header>
 
     <div class="kanban-board">
       <div class="kanban-column" v-for="status in ['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE', 'CANCELLED']" :key="status">
         <div class="column-header" :class="status.toLowerCase()">
-          {{ formatStatus(status) }}
+          {{ t(`task.status_${status}`) }}
         </div>
         <draggable
           class="list-group"
@@ -63,23 +65,30 @@
       @refresh="onTaskUpdated"
     />
 
+    <project-members-dialog
+      v-if="showMembersDialog"
+      v-model="showMembersDialog"
+      :project-id="projectId"
+      @refresh="onMembersUpdated"
+    />
+
     <!-- Create Task Dialog -->
-    <el-dialog v-model="showTaskDialog" title="Create New Task" width="30%">
+    <el-dialog v-model="showTaskDialog" :title="t('task.createTitle')" width="30%">
       <el-form :model="taskForm" label-width="100px">
-        <el-form-item label="Title">
+        <el-form-item :label="t('task.title')">
           <el-input v-model="taskForm.title" />
         </el-form-item>
-        <el-form-item label="Description">
+        <el-form-item :label="t('task.description')">
           <el-input v-model="taskForm.description" type="textarea" />
         </el-form-item>
-        <el-form-item label="Planned Start">
+        <el-form-item :label="t('task.plannedStart')">
           <el-date-picker v-model="taskForm.plannedStartDate" type="datetime" placeholder="Select date and time" />
         </el-form-item>
-        <el-form-item label="Due Date">
+        <el-form-item :label="t('task.dueDate')">
           <el-date-picker v-model="taskForm.dueDate" type="datetime" placeholder="Select date and time" />
         </el-form-item>
-        <el-form-item label="Assignee">
-          <el-select v-model="taskForm.assigneeId" placeholder="Select Assignee">
+        <el-form-item :label="t('task.assignee')">
+          <el-select v-model="taskForm.assigneeId" placeholder="Select Assignee" value-key="id">
             <el-option
               v-for="member in taskStore.members"
               :key="member.user.id"
@@ -88,7 +97,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="Priority">
+        <el-form-item :label="t('task.priority')">
           <el-select v-model="taskForm.priority">
             <el-option label="Low" value="LOW" />
             <el-option label="Medium" value="MEDIUM" />
@@ -96,14 +105,14 @@
             <el-option label="Urgent" value="URGENT" />
           </el-select>
         </el-form-item>
-        <el-form-item label="Story Points">
+        <el-form-item :label="t('task.storyPoints')">
           <el-input-number v-model="taskForm.storyPoints" :precision="1" :step="0.5" :min="0" />
         </el-form-item>
       </el-form>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="showTaskDialog = false">Cancel</el-button>
-          <el-button type="primary" @click="handleCreateTask">Create</el-button>
+          <el-button @click="showTaskDialog = false">{{ t('common.cancel') }}</el-button>
+          <el-button type="primary" @click="handleCreateTask">{{ t('common.create') }}</el-button>
         </span>
       </template>
     </el-dialog>
@@ -118,9 +127,12 @@ import { useTaskStore } from '@/stores/task.store'
 import { useAuthStore } from '@/stores/auth.store'
 import draggable from 'vuedraggable'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 import TaskDetailDialog from '@/components/TaskDetailDialog.vue'
+import ProjectMembersDialog from '@/components/ProjectMembersDialog.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const projectStore = useProjectStore()
 const taskStore = useTaskStore()
@@ -158,16 +170,17 @@ const finalUploadHeaders = computed(() => ({
 const uploadHeadersSafe = finalUploadHeaders
 
 const handleImportSuccess = (response: any) => {
-  ElMessage.success(response.message || 'Import successful')
+  ElMessage.success(response.message || t('common.success'))
   taskStore.fetchTasks(projectId)
 }
 
 const handleImportError = (error: any) => {
-  ElMessage.error('Import failed: ' + (error.response?.data?.message || 'Unknown error'))
+  ElMessage.error(t('common.error') + ': ' + (error.response?.data?.message || 'Unknown error'))
 }
 
 const showTaskDialog = ref(false)
 const showDetailDialog = ref(false)
+const showMembersDialog = ref(false)
 const selectedTaskId = ref<number | undefined>(undefined)
 
 const taskForm = reactive({
@@ -221,6 +234,10 @@ const onTaskUpdated = () => {
   taskStore.fetchTasks(projectId)
 }
 
+const onMembersUpdated = () => {
+  taskStore.fetchMembers(projectId)
+}
+
 const handleCreateTask = async () => {
   if (!taskForm.title) return
   const payload = {
@@ -231,18 +248,18 @@ const handleCreateTask = async () => {
   showTaskDialog.value = false
   taskForm.title = ''
   taskForm.description = ''
-  ElMessage.success('Task created')
+  ElMessage.success(t('task.created'))
 }
 
 const handleDeleteTask = async (id: number) => {
     try {
-    await ElMessageBox.confirm('Are you sure to delete this task?', 'Warning', {
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
+    await ElMessageBox.confirm(t('task.deleteConfirm'), t('common.warning'), {
+      confirmButtonText: t('common.yes'),
+      cancelButtonText: t('common.no'),
       type: 'warning'
     })
     await taskStore.removeTask(id)
-    ElMessage.success('Task deleted')
+    ElMessage.success(t('task.deleted'))
   } catch (e) {
     // cancelled
   }

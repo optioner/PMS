@@ -21,6 +21,7 @@ export default {
     success: '成功',
     error: '错误',
     actions: '操作',
+    add: '添加',
     status: '状态',
     id: 'ID'
   },
@@ -36,6 +37,7 @@ export default {
     overdue: '已逾期',
     hours: '工时 (本周)',
     myProjects: '我的项目',
+    allProjects: '所有项目',
     newProject: '新建项目'
   },
   project: {
@@ -44,7 +46,10 @@ export default {
     createTitle: '创建新项目',
     deleteConfirm: '确定要删除这个项目吗？',
     created: '项目已创建',
-    deleted: '项目已删除'
+    deleted: '项目已删除',
+    members: '项目成员',
+    selectUser: '选择用户加入',
+    selectRole: '选择角色'
   },
   task: {
     newTask: '新建任务',

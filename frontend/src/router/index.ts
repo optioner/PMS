@@ -17,6 +17,12 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/projects/:id/gantt',
+      name: 'project-gantt',
+      component: () => import('../views/ProjectGantt.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/timesheets',
       name: 'timesheets',
       component: () => import('../views/TimesheetView.vue'),

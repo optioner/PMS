@@ -17,4 +17,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT COUNT(t) FROM Task t WHERE t.assignee.id = :userId AND t.dueDate < CURRENT_TIMESTAMP AND t.status <> 'DONE' AND t.status <> 'CANCELLED'")
     long countOverdueTasks(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM Task t WHERE t.assignee.id = :userId AND t.id <> :excludeTaskId AND t.status <> 'DONE' AND t.status <> 'CANCELLED' AND " +
+           "(t.plannedStartDate IS NOT NULL AND t.dueDate IS NOT NULL) AND " +
+           "(t.plannedStartDate < :end AND t.dueDate > :start)")
+    List<Task> findOverlappingTasks(@Param("userId") Long userId, @Param("start") java.time.LocalDateTime start, @Param("end") java.time.LocalDateTime end, @Param("excludeTaskId") Long excludeTaskId);
 }

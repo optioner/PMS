@@ -21,6 +21,7 @@ export default {
     success: 'Success',
     error: 'Error',
     actions: 'Actions',
+    add: 'Add',
     status: 'Status',
     id: 'ID'
   },
@@ -36,6 +37,7 @@ export default {
     overdue: 'Overdue',
     hours: 'Hours (This Week)',
     myProjects: 'My Projects',
+    allProjects: 'All Projects',
     newProject: 'New Project'
   },
   project: {
@@ -44,7 +46,10 @@ export default {
     createTitle: 'Create New Project',
     deleteConfirm: 'Are you sure to delete this project?',
     created: 'Project created',
-    deleted: 'Project deleted'
+    deleted: 'Project deleted',
+    members: 'Project Members',
+    selectUser: 'Select User to Add',
+    selectRole: 'Select Role'
   },
   task: {
     newTask: 'New Task',

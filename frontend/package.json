@@ -12,6 +12,7 @@
     "@element-plus/icons-vue": "^2.3.0",
     "axios": "^1.6.0",
     "element-plus": "^2.5.0",
+    "frappe-gantt": "^1.0.4",
     "pinia": "^2.1.0",
     "vue": "^3.4.0",
     "vue-i18n": "^9.14.4",

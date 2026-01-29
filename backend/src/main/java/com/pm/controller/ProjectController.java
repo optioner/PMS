@@ -16,8 +16,13 @@ public class ProjectController {
     private ProjectService projectService;
 
     @GetMapping
-    public List<Project> getAllProjects() {
+    public List<Project> getMyProjects() {
         return projectService.getAllProjectsForCurrentUser();
+    }
+
+    @GetMapping("/all")
+    public List<Project> getAllProjects() {
+        return projectService.getAllProjects();
     }
 
     @PostMapping

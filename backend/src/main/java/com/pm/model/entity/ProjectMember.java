@@ -38,5 +38,23 @@ public class ProjectMember {
     protected void onCreate() {
         // joinedAt uses DEFAULT CURRENT_TIMESTAMP in DB, but JPA might need manual set if not using @CreationTimestamp or database default definition fully with JPA
         // Let's rely on DB default or set it manually if needed.
+        if (joinedAt == null) {
+            joinedAt = LocalDateTime.now();
+        }
     }
+
+    public ProjectMemberKey getId() { return id; }
+    public void setId(ProjectMemberKey id) { this.id = id; }
+
+    public Project getProject() { return project; }
+    public void setProject(Project project) { this.project = project; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public ProjectRole getRole() { return role; }
+    public void setRole(ProjectRole role) { this.role = role; }
+
+    public LocalDateTime getJoinedAt() { return joinedAt; }
+    public void setJoinedAt(LocalDateTime joinedAt) { this.joinedAt = joinedAt; }
 }

@@ -47,8 +47,29 @@ public class TaskService {
         task.setProject(project);
         task.setReporter(reporter);
         
+        // Explicitly fetch assignee from DB to ensure it's a managed entity if provided
+        if (task.getAssignee() != null && task.getAssignee().getId() != null) {
+            User assignee = userRepository.findById(task.getAssignee().getId())
+                    .orElseThrow(() -> new RuntimeException("Assignee not found"));
+            task.setAssignee(assignee);
+        } else {
+            task.setAssignee(null); // Ensure null if invalid ID
+        }
+        
         if (task.getActualHours() == null) {
             task.setActualHours(BigDecimal.ZERO);
+        }
+        
+        if (task.getAssignee() != null && task.getPlannedStartDate() != null && task.getDueDate() != null) {
+            List<Task> overlaps = taskRepository.findOverlappingTasks(
+                task.getAssignee().getId(), 
+                task.getPlannedStartDate(), 
+                task.getDueDate(), 
+                0L // ID 0 means new task, checking against existing
+            );
+            if (!overlaps.isEmpty()) {
+                throw new RuntimeException("Task overlap detected! User already has " + overlaps.size() + " task(s) during this period.");
+            }
         }
         
         Task savedTask = taskRepository.save(task);
@@ -109,6 +130,19 @@ public class TaskService {
         // Handle Parent Task (Splitting)
         if (taskDetails.getParentTask() != null) {
             task.setParentTask(taskDetails.getParentTask());
+        }
+        
+        // Check for overlaps on update if dates or assignee changed
+        if (task.getAssignee() != null && task.getPlannedStartDate() != null && task.getDueDate() != null) {
+             List<Task> overlaps = taskRepository.findOverlappingTasks(
+                task.getAssignee().getId(), 
+                task.getPlannedStartDate(), 
+                task.getDueDate(), 
+                task.getId()
+            );
+            if (!overlaps.isEmpty()) {
+                throw new RuntimeException("Task overlap detected! User already has " + overlaps.size() + " task(s) during this period.");
+            }
         }
         
         Task updatedTask = taskRepository.save(task);

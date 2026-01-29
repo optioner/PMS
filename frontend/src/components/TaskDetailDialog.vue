@@ -20,7 +20,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="Assignee">
-            <el-select v-model="form.assigneeId" placeholder="Select Assignee">
+            <el-select v-model="form.assigneeId" placeholder="Select Assignee" value-key="id">
                <el-option
                 v-for="member in members"
                 :key="member.user.id"
@@ -130,14 +130,18 @@ watch(() => props.taskId, async (newId) => {
   if (newId) {
     const task = allTasks.value.find(t => t.id === newId)
     if (task) {
+      // Ensure date format for element-plus date-picker
+      const plannedStart = task.plannedStartDate ? new Date(task.plannedStartDate) : ''
+      const dueDate = task.dueDate ? new Date(task.dueDate) : ''
+      
       Object.assign(form, {
         title: task.title,
         description: task.description,
         status: task.status,
         priority: task.priority,
-        assigneeId: task.assignee?.id,
-        plannedStartDate: task.plannedStartDate,
-        dueDate: task.dueDate,
+        assigneeId: task.assignee ? task.assignee.id : null,
+        plannedStartDate: plannedStart,
+        dueDate: dueDate,
         storyPoints: task.storyPoints
       })
       // Fetch details if not eager loaded (mocking for now, ideally fetch single task API)
@@ -146,11 +150,11 @@ watch(() => props.taskId, async (newId) => {
     }
   } else {
     // Reset form for new task (if we re-use this dialog for creation)
-    Object.assign(form, { title: '', description: '', status: 'TODO' })
+    Object.assign(form, { title: '', description: '', status: 'TODO', assigneeId: null, plannedStartDate: '', dueDate: '', storyPoints: 0 })
     subtasks.value = []
     dependencies.value = []
   }
-})
+}, { immediate: true })
 
 const closeDialog = () => {
   visible.value = false
