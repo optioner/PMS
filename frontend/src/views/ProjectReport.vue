@@ -88,7 +88,7 @@ import { useRoute } from 'vue-router'
 import request from '@/utils/request'
 
 const route = useRoute()
-const projectId = route.params.id
+const projectId = route.params.id as string // Ensure string type
 const report = ref<any>(null)
 
 onMounted(async () => {
@@ -98,7 +98,7 @@ onMounted(async () => {
 
 const getPercentage = (count: number) => {
   if (!report.value?.taskStats.total) return 0
-  return (count / report.value.taskStats.total) * 100
+  return (count / Number(report.value.taskStats.total)) * 100
 }
 
 const getStatusColor = (status: string) => {
