@@ -140,10 +140,7 @@ const authStore = useAuthStore()
 const projectId = Number(route.params.id)
 
 const importUrl = computed(() => `/api/v1/projects/${projectId}/import`)
-const uploadHeaders = computed(() => ({
-  Authorization: `Bearer ${authStore.user?.token || ''}` // Assuming token is stored in user object or similar
-  // Adjust based on your actual auth store implementation. Usually token is in localStorage or authStore.token
-}))
+
 
 // Fix headers if token is not directly in user object
 if (!authStore.user && localStorage.getItem('user')) {
@@ -204,9 +201,7 @@ const getTasksByStatus = (status: string) => {
   return taskStore.tasks.filter((t: any) => t.status === status)
 }
 
-const formatStatus = (status: string) => {
-  return status.replace('_', ' ')
-}
+
 
 const getPriorityType = (priority: string) => {
   switch (priority) {

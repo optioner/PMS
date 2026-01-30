@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" :title="t('project.members')" width="50%" @close="closeDialog">
+  <el-dialog v-model="visible" :title="t('project.members')" width="50%">
     <div class="mb-4">
       <el-select v-model="selectedUserId" filterable :placeholder="t('project.selectUser')" class="mr-2" style="width: 200px" value-key="id">
         <el-option

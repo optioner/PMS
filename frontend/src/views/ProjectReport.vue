@@ -41,7 +41,7 @@
             <div v-for="(count, status) in report.taskDistribution" :key="status" class="bar-item">
               <span class="bar-label">{{ status }}</span>
               <div class="bar-track">
-                <div class="bar-fill" :style="{ width: getPercentage(count) + '%', backgroundColor: getStatusColor(status) }"></div>
+                <div class="bar-fill" :style="{ width: getPercentage(count) + '%', backgroundColor: getStatusColor(String(status)) }"></div>
               </div>
               <span class="bar-count">{{ count }}</span>
             </div>

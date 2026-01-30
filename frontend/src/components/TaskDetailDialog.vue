@@ -84,7 +84,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, computed } from 'vue'
 import { useTaskStore } from '@/stores/task.store'
-import { createTask, updateTask } from '@/api/task'
+import { createTask } from '@/api/task'
 import { ElMessage } from 'element-plus'
 
 const props = defineProps<{
@@ -186,7 +186,7 @@ const addSubtask = async () => {
    }
 }
 
-const removeSubtask = async (id: number) => {
+const removeSubtask = async (_id: number) => {
     // Call delete API
 }
 

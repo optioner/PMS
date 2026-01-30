@@ -56,9 +56,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import request from '@/utils/request'
-import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+
 const stats = ref<any>({})
 
 onMounted(async () => {
