@@ -77,10 +77,11 @@ echo "==========================================="
 cd frontend
 npm install
 
-# Set API URL for production build (CORS allowed in backend)
-export VITE_API_BASE_URL="http://localhost:$SERVER_PORT/api/v1"
-npm run build
+# Use relative path for API - nginx will proxy to backend
+# Do NOT use absolute URL like http://localhost:8080 as it won't work from external IPs
+rm -rf dist
 
+npm run build
 if [ $? -ne 0 ]; then
     echo "Frontend build failed!"
     exit 1
