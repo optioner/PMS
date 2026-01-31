@@ -16,7 +16,7 @@ echo "Backend started with PID $BACKEND_PID. Logs: backend.log"
 # Start Frontend
 echo "Starting Frontend..."
 cd frontend
-npm run dev -- --host > ../frontend.log 2>&1 &
+npm run build -- --host > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
 echo "Frontend started with PID $FRONTEND_PID. Logs: frontend.log"
 
