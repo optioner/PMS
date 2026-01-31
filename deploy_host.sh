@@ -84,10 +84,56 @@ lsof -ti:$FRONTEND_PORT | xargs kill -9 2>/dev/null || true
 
 echo ">> Existing services stopped."
 
-# 4. Build and Run Backend
+# 4. Build and Deploy Frontend (deploy frontend first as it consumes more resources)
 echo ""
 echo "==========================================="
-echo "[Step 4] Building Backend...              "
+echo "[Step 4] Building Frontend...             "
+echo "==========================================="
+
+echo "  -> Changing directory to 'frontend/'..."
+cd frontend
+
+echo "  -> Running 'npm install' to install dependencies..."
+npm install
+
+echo "  -> Removing old 'dist/' directory..."
+rm -rf dist
+
+echo "  -> Running 'npm run build' to build frontend assets..."
+# Use relative path for API - nginx will proxy to backend
+# Do NOT use absolute URL like http://localhost:8080 as it won't work from external IPs
+npm run build
+if [ $? -ne 0 ]; then
+    echo "Frontend build failed!"
+    exit 1
+fi
+echo ">> Frontend build completed successfully."
+
+echo ""
+echo "[Step 5] Deploying Frontend with Nginx..."
+
+echo "  -> Copying dist/* to /usr/share/nginx/html/..."
+sudo cp -r dist/* /usr/share/nginx/html/
+
+echo "  -> Copying nginx.prod.conf to /etc/nginx/conf.d/default.conf..."
+sudo cp nginx.prod.conf /etc/nginx/conf.d/default.conf
+
+echo "  -> Testing nginx configuration and reloading..."
+sudo nginx -t && sudo nginx -s reload
+
+echo "  -> Starting frontend with 'npx serve' on port $FRONTEND_PORT..."
+# Using 'serve' to host the static files on port 3000
+nohup npx serve -s dist -l $FRONTEND_PORT > ../frontend.log 2>&1 &
+FRONTEND_PID=$!
+echo ">> Frontend started with PID $FRONTEND_PID. Logs: frontend.log"
+
+echo "  -> Returning to project root directory..."
+cd ..
+
+# 6. Build and Run Backend
+echo ""
+echo "==========================================="
+echo "[Step 6] Building Backend...              "
 echo "==========================================="
 
 echo "  -> Changing directory to 'backend/'..."
@@ -118,52 +164,6 @@ nohup java -jar target/*.jar \
 
 BACKEND_PID=$!
 echo ">> Backend started with PID $BACKEND_PID. Logs: backend.log"
-
-echo "  -> Returning to project root directory..."
-cd ..
-
-# 5. Build and Run Frontend
-echo ""
-echo "==========================================="
-echo "[Step 5] Building Frontend...             "
-echo "==========================================="
-
-echo "  -> Changing directory to 'frontend/'..."
-cd frontend
-
-echo "  -> Running 'npm install' to install dependencies..."
-npm install
-
-echo "  -> Removing old 'dist/' directory..."
-rm -rf dist
-
-echo "  -> Running 'npm run build' to build frontend assets..."
-# Use relative path for API - nginx will proxy to backend
-# Do NOT use absolute URL like http://localhost:8080 as it won't work from external IPs
-npm run build
-if [ $? -ne 0 ]; then
-    echo "Frontend build failed!"
-    exit 1
-fi
-echo ">> Frontend build completed successfully."
-
-echo ""
-echo "[Step 6] Deploying Frontend with Nginx..."
-
-echo "  -> Copying dist/* to /usr/share/nginx/html/..."
-sudo cp -r dist/* /usr/share/nginx/html/
-
-echo "  -> Copying nginx.prod.conf to /etc/nginx/conf.d/default.conf..."
-sudo cp nginx.prod.conf /etc/nginx/conf.d/default.conf
-
-echo "  -> Testing nginx configuration and reloading..."
-sudo nginx -t && sudo nginx -s reload
-
-echo "  -> Starting frontend with 'npx serve' on port $FRONTEND_PORT..."
-# Using 'serve' to host the static files on port 3000
-nohup npx serve -s dist -l $FRONTEND_PORT > ../frontend.log 2>&1 &
-FRONTEND_PID=$!
-echo ">> Frontend started with PID $FRONTEND_PID. Logs: frontend.log"
 
 echo "  -> Returning to project root directory..."
 cd ..
