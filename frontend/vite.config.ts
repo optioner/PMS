@@ -13,12 +13,23 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  build: {
+    chunkSizeWarningLimit: 1100,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router', 'pinia'],
+          'element-plus': ['element-plus', '@element-plus/icons-vue'],
+          'utils': ['axios', 'vue-i18n']
+        }
+      }
+    }
+  },
   server: {
     host: '0.0.0.0',
-    allowedHosts: ['optioner.vicp.net'],
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8080',
+        target: 'http://47.110.229.177:8080',
         changeOrigin: true
       }
     }
