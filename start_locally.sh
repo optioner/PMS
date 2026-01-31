@@ -17,6 +17,16 @@ echo "Backend started with PID $BACKEND_PID. Logs: backend.log"
 echo "Starting Frontend..."
 cd frontend
 npm run build -- --host > ../frontend.log 2>&1 &
+
+
+if [ $? -ne 0 ]; then
+    echo "Frontend build failed!"
+    exit 1
+fi
+
+echo ">> Starting Frontend (using npx serve)..."
+# Using 'serve' to host the static files on port 3000
+nohup npx serve -s dist -l $FRONTEND_PORT > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
 echo "Frontend started with PID $FRONTEND_PID. Logs: frontend.log"
 
