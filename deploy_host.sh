@@ -87,6 +87,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo ">> Starting Frontend (using npx serve)..."
+sudo cp -r dist/* /usr/share/nginx/html/
+sudo cp nginx.prod.conf /etc/nginx/conf.d/default.conf
+sudo nginx -t && sudo nginx -s reload
 # Using 'serve' to host the static files on port 3000
 nohup npx serve -s dist -l $FRONTEND_PORT > ../frontend.log 2>&1 &
 FRONTEND_PID=$!
