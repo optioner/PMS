@@ -119,7 +119,22 @@ echo "  -> Copying nginx.prod.conf to /etc/nginx/conf.d/default.conf..."
 sudo cp nginx.prod.conf /etc/nginx/conf.d/default.conf
 
 echo "  -> Testing nginx configuration and reloading..."
-#sudo nginx -t && sudo nginx -s reload
+# 检查配置语法
+if sudo nginx -t; then
+    echo "配置测试通过"
+    
+    # 检查 Nginx 是否正在运行
+    if pgrep -x "nginx" > /dev/null; then
+        echo "Nginx 正在运行，执行平滑重载..."
+        sudo nginx -s reload
+    else
+        echo "Nginx 未运行，启动服务..."
+        sudo nginx
+    fi
+else
+    echo "配置测试失败，请检查配置文件"
+    exit 1
+fi
 
 echo "  -> Starting frontend with 'npx serve' on port $FRONTEND_PORT..."
 # Using 'serve' to host the static files on port 3000
