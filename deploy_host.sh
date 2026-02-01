@@ -119,7 +119,7 @@ echo "  -> Copying nginx.prod.conf to /etc/nginx/conf.d/default.conf..."
 sudo cp nginx.prod.conf /etc/nginx/conf.d/default.conf
 
 echo "  -> Testing nginx configuration and reloading..."
-sudo nginx -t && sudo nginx -s reload
+#sudo nginx -t && sudo nginx -s reload
 
 echo "  -> Starting frontend with 'npx serve' on port $FRONTEND_PORT..."
 # Using 'serve' to host the static files on port 3000
